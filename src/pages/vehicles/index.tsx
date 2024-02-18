@@ -1,22 +1,18 @@
-import { Button } from "@chakra-ui/react";
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import MapGL, { FullscreenControl, Marker, NavigationControl } from 'react-map-gl';
 import { Link } from "react-router-dom";
+
 
 
 function Vehicles() {
 
   const [socket, setSocket] = useState()
 
-  const [viewport, setViewport] = useState({
-    longitude: -100,
-    latitude: 40,
-    zoom: 3.5
-  });
-
   const [markers, setMarkers] = useState({})
 
   const [carsAvailable, setCarsAvailable] = useState(null)
+
+  const mapRef = useRef()
 
   useEffect(() => {
 
@@ -35,7 +31,7 @@ function Vehicles() {
     newSocket.onmessage = (data) => {
       const temp = JSON.parse(data['data'])
       setMarkers(temp)
-
+      console.log(temp)
       if (carsAvailable === null) {
         let curr = []
         Object.keys(temp).map(item => {
@@ -58,8 +54,10 @@ function Vehicles() {
 
   }, [])
 
+
+
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "row", gap: "2rem" }}>
 
       <MapGL
         mapboxAccessToken="pk.eyJ1Ijoia3VtYXJhbi0tcnIiLCJhIjoiY2xzbjM2bHJyMHhjajJqcGU2dG4wbHgxNyJ9.M74FXUesVn69DGQeITmPPQ"
@@ -75,39 +73,46 @@ function Vehicles() {
         }} >
         <FullscreenControl />
         <NavigationControl />
-        {
-          JSON.stringify(markers)
-        }
+
         {
           Object.keys(markers).map(item => {
             return (
-              <Marker onClick={(e) => {
-                console.log(e)
-              }} latitude={parseFloat(markers[item]["location"][1])} longitude={parseFloat(markers[item]["location"][0])} >
+              <>
+                {
+                  markers[item]["location"] && <Marker onClick={(e) => {
+                    console.log(e)
+                  }} latitude={parseFloat(markers[item]["location"][1])} longitude={parseFloat(markers[item]["location"][0])} >
 
-                <div style={{ width: "15px" }}>
-                  <strong>{markers[item]["accident"] ? "🔴" : "🛞"}</strong>
-                </div>
-              </Marker>
+                    <div style={{ width: "15px" }}>
+                      <strong>{markers[item]["accident"] ? "🔴" : "🛞"}</strong>
+                    </div>
+                  </Marker>
+                }
+              </>
+
             )
           })
         }
 
       </MapGL>
 
-      {
-        carsAvailable ? carsAvailable.map(item => {
-          return (
-            <div>
-              <Link to={"/vehicles/" + item}>{item}</Link>
-            </div>
-          )
-        }) : ""
-      }
-
       <div>
-        <Button>Add New Vehicle</Button>
+
+        {
+          carsAvailable ? carsAvailable.map(item => {
+            return (
+              <div style={{display:"flex",gap:"2rem",textTransform:"capitalize"}}>
+                <Link style={{"color":"blue" , "textDecoration":"underline"}} to={"/vehicles/" + item}>{item}</Link>
+                <span>{markers[item]["accident"]&&markers[item]["accident"]}</span>
+              </div>
+            )
+          }) : ""
+        }
+
       </div>
+
+
+
 
     </div>
   )

@@ -10,6 +10,8 @@ import {
     Input,
     Button,
     MenuIcon,
+    Card,
+    CardBody,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { IconButton } from '@chakra-ui/react'
@@ -19,60 +21,36 @@ import { BrowserRouter, Link, NavLink } from 'react-router-dom';
 
 function Sidebar() {
 
-    const [open, setOpen] = useState(false)
 
-    const closeHandler = () => {
-        setOpen(false)
-    }
 
     return (
         <div>
 
-            <IconButton colorScheme='blue'
-                aria-label='Menu bar'
-                icon={<CiMenuFries />} onClick={() => setOpen(true)}>
+            <Card>
+                <CardBody display={"flex"} flexDirection={"column"} gap="2rem" height="100%">
+                    {
+                        [ "vehicles","random_events", "add_vehicles"].map(item => {
+                            return (
 
-            </IconButton>
-
-            <Drawer isOpen={open} onClose={closeHandler} placement='left'>
-                <DrawerOverlay />
-                <DrawerContent>
-                    <DrawerCloseButton />
-                    <DrawerHeader>Team X</DrawerHeader>
-
-                    <DrawerBody display={"flex"} flexDirection={"column"} gap="2rem">
-
-                        {
-                            ["dashboard", "add_vehicle", "vehicles"].map(item => {
-                                return (
-
-                                    <NavLink
-                                        to={item}
-                                        style={({ isActive, isPending, isTransitioning }) => {
-                                            return {
-                                                fontWeight: isActive ? "bold" : "",
-                                                color: isPending ? "red" : "black",
-                                                viewTransitionName: isTransitioning ? "slide" : "",
-                                            };
-                                        }}
-                                    >
-                                        {item}
-                                    </NavLink>
-                                )
-                            })
-                        }
+                                <NavLink
+                                    to={item}
+                                    style={({ isActive, isPending, isTransitioning }) => {
+                                        return {
+                                            fontWeight: isActive ? "bold" : "",
+                                            color: isPending ? "red" : "black",
+                                            viewTransitionName: isTransitioning ? "slide" : "",
+                                        };
+                                    }}
+                                >
+                                    {  item.toUpperCase()}
+                                </NavLink>
+                            )
+                        })
+                    }
+                </CardBody>
+            </Card>
 
 
-                    </DrawerBody>
-
-                    <DrawerFooter>
-                        <Button variant='outline' colorScheme='blue' mr={3} onClick={closeHandler}>
-                            Logout
-                        </Button>
-
-                    </DrawerFooter>
-                </DrawerContent>
-            </Drawer>
         </div>
     )
 }
